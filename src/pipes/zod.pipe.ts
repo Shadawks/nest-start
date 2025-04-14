@@ -10,7 +10,6 @@ import { ZodSchema } from 'zod';
 export class ZodValidationPipe implements PipeTransform {
   constructor(private schema: ZodSchema) {}
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   transform(value: unknown, _metadata: ArgumentMetadata) {
     const result = this.schema.safeParse(value);
 
@@ -21,7 +20,6 @@ export class ZodValidationPipe implements PipeTransform {
       });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return result.data;
   }
 }

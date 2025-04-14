@@ -39,7 +39,6 @@ export class AuthService {
       isVerified: false,
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _hashed, ...userWithoutPassword } = user;
     const token = await this.jwtService.signAsync(userWithoutPassword);
 
@@ -47,7 +46,7 @@ export class AuthService {
       token,
       user: userWithoutPassword,
     };
-  }az
+  }
 
   async login(username: string, password: string) {
     const user = await this.usersService.findByUsername(username);
@@ -64,7 +63,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid password');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _hashed, ...userWithoutPassword } = user;
     const token = await this.jwtService.signAsync(userWithoutPassword);
 

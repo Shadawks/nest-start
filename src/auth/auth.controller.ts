@@ -27,8 +27,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Get('me')
-  me(@Req() req: Request & { user: any }) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  me(@Req() req: Request & { user: unknown }) {
     return req.user;
   }
 }
