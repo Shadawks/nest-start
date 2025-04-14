@@ -1,6 +1,15 @@
-import { Body, Controller, Post, Get, Req, UseGuards } from '@nestjs/common';
+import { 
+  Body, 
+  Controller, 
+  Post, 
+  Get, 
+  UseGuards,
+  HttpCode,
+  HttpStatus
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ZodValidationPipe } from '../pipes/zod.pipe';
+import { UsersService } from '../api/users/users.service';
+import { ZodValidationPipe } from '../common/pipes/zod.pipe';
 import {
   LoginDto,
   LoginSchema,
@@ -8,10 +17,15 @@ import {
   RegisterSchema,
 } from './auth.schema';
 import { AuthGuard } from './auth.guard';
+import { CurrentUser } from '../common/decorators/CurrentUser';
+import JwtPayload from '../common/interfaces/JwtPayload';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Post('register')
   async register(
@@ -21,13 +35,14 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   async login(@Body(new ZodValidationPipe(LoginSchema)) dto: LoginDto) {
     return this.authService.login(dto.username, dto.password);
   }
 
-  @UseGuards(AuthGuard)
   @Get('me')
-  me(@Req() req: Request & { user: unknown }) {
-    return req.user;
+  @UseGuards(AuthGuard)
+  getProfile(@CurrentUser() user: JwtPayload) {
+    return this.usersService.findById(user.id);
   }
 }

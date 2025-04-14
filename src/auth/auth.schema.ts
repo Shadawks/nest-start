@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CreateUserSchema } from '../users/user.schema';
+import { CreateUserSchema } from '../api/users/user.schema';
 
 export const RegisterSchema = CreateUserSchema;
 
