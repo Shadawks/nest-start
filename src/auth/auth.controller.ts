@@ -16,7 +16,7 @@ import {
   RegisterDto,
   RegisterSchema,
 } from './auth.schema';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from './guards/auth.guard';
 import { CurrentUser } from '../common/decorators/CurrentUser';
 import JwtPayload from '../common/interfaces/JwtPayload';
 

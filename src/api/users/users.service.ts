@@ -20,11 +20,17 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
+
     return user;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.em.findOne(User, { email });
+    const user = await this.em.findOne(User, { email });
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+
+    return user;
   }
 
   async findByUsername(username: string): Promise<User | null> {
@@ -42,7 +48,6 @@ export class UsersService {
 
   async delete(id: number): Promise<void> {
     const user = await this.findById(id);
-    
     await this.em.removeAndFlush(user);
   }
 

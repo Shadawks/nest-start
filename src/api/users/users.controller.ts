@@ -8,12 +8,16 @@ import {
   Param,
   Query,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserSchema, CreateUserDto } from './user.schema';
 import { ZodValidationPipe } from '../../common/pipes/zod.pipe';
+import { AuthGuard } from '../../auth/guards/auth.guard';
+import { AdminGuard } from '../../auth/guards/admin.guard';
 
 @Controller('users')
+@UseGuards(AuthGuard, AdminGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
