@@ -6,9 +6,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { RefreshToken } from './refresh-token.entity';
+import { RefreshTokenService } from './refresh-token.service';
 
 @Module({
   imports: [
+    MikroOrmModule.forFeature([RefreshToken]),
     forwardRef(() => UsersModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -21,7 +25,7 @@ import { AdminGuard } from './guards/admin.guard';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, AuthGuard, AdminGuard],
+  providers: [AuthService, AuthGuard, AdminGuard, RefreshTokenService],
   exports: [AuthGuard, AdminGuard, JwtModule],
   controllers: [AuthController],
 })

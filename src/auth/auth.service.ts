@@ -2,7 +2,8 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
-  ConflictException
+  ConflictException,
+  ForbiddenException
 } from '@nestjs/common';
 import { UsersService } from '../api/users/users.service';
 import { CreateUserDto } from '../api/users/user.schema';
@@ -10,28 +11,27 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../api/users/user.entity';
 import AuthResponse from '../common/interfaces/AuthResponse';
+import { RefreshTokenService } from './refresh-token.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private refreshTokenService: RefreshTokenService
   ) {}
 
   async register(createUserDto: CreateUserDto): Promise<AuthResponse> {
     const { password, ...userData } = createUserDto;
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    const [existingUsername, existingEmail] = await Promise.all([
+      this.usersService.findByUsername(userData.username),
+      this.usersService.findByEmail(userData.email)
+    ]);
     
-    const existingUser = await this.usersService.findByEmail(userData.email);
-    if (existingUser) {
-      throw new ConflictException('Email already exists');
-    }
-    
-    const existingUsername = await this.usersService.findByUsername(
-      userData.username,
-    );
-    if (existingUsername) {
-      throw new ConflictException('Username already exists');
+    if (existingUsername || existingEmail) {
+      throw new ConflictException('Username or email already exists');
     }
 
     const user = await this.usersService.create({
@@ -45,8 +45,8 @@ export class AuthService {
     return this.generateAuthResponse(user);
   }
 
-  async login(username: string, password: string): Promise<AuthResponse> {
-    const user = await this.usersService.findByUsername(username);
+  async login(identifier: string, password: string): Promise<AuthResponse> {
+    const user = await this.usersService.findByUsernameOrEmail(identifier);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -63,13 +63,46 @@ export class AuthService {
     return this.generateAuthResponse(user);
   }
 
+  async refreshToken(refreshToken: string): Promise<AuthResponse> {
+    const tokenEntity = await this.refreshTokenService.findByToken(refreshToken);
+    
+    if (!tokenEntity) {
+      throw new ForbiddenException('Invalid refresh token');
+    }
+    
+    if (new Date() > tokenEntity.expiresAt) {
+      await this.refreshTokenService.revokeToken(tokenEntity.id);
+      throw new ForbiddenException('Refresh token expired');
+    }
+    
+    const user = tokenEntity.user;
+    
+    if (user.isBlocked) {
+      throw new UnauthorizedException('User is blocked');
+    }
+
+    await this.refreshTokenService.revokeToken(tokenEntity.id);
+    
+    return this.generateAuthResponse(user);
+  }
+
   private async generateAuthResponse(user: User): Promise<AuthResponse> {
     const { password: _hashed, ...userWithoutPassword } = user;
-    const token = await this.jwtService.signAsync(userWithoutPassword);
-
+    
+    const token = await this.jwtService.signAsync({
+      sub: user.id
+    }, { expiresIn: '1h' });
+    
+    const refreshTokenEntity = await this.refreshTokenService.createRefreshToken(user);
+    
     return {
       token,
+      refreshToken: refreshTokenEntity.token,
       user: userWithoutPassword,
     };
+  }
+
+  async logout(userId: string): Promise<void> {
+    await this.refreshTokenService.revokeAllUserTokens(userId);
   }
 }

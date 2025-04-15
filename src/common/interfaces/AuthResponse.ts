@@ -1,6 +1,9 @@
 import { User } from '../../api/users/user.entity';
 
-export default interface AuthResponse {
+interface AuthResponse {
   token: string;
+  refreshToken: string;
   user: Omit<User, 'password'>;
 }
+
+export default AuthResponse;

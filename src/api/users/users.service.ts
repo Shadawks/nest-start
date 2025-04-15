@@ -15,7 +15,7 @@ export class UsersService {
     return user;
   }
 
-  async findById(id: number): Promise<User> {
+  async findById(id: string): Promise<User> {
     const user = await this.em.findOne(User, { id });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -26,18 +26,28 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.em.findOne(User, { email });
-    if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
-    }
 
     return user;
   }
 
   async findByUsername(username: string): Promise<User | null> {
-    return this.em.findOne(User, { username });
+    const user = await this.em.findOne(User, { username });
+
+    return user;
   }
 
-  async update(id: number, dto: UpdateUserDto): Promise<User> {
+  async findByUsernameOrEmail(usernameOrEmail: string): Promise<User | null> {
+    const user = await this.em.findOne(User, {
+      $or: [
+        { username: usernameOrEmail },
+        { email: usernameOrEmail },
+      ],
+    });
+
+    return user;
+  }
+
+  async update(id: string, dto: UpdateUserDto): Promise<User> {
     const user = await this.findById(id);
     
     this.em.assign(user, dto);
@@ -46,7 +56,7 @@ export class UsersService {
     return user;
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     const user = await this.findById(id);
     await this.em.removeAndFlush(user);
   }

@@ -8,7 +8,6 @@ import {
   HttpStatus
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UsersService } from '../api/users/users.service';
 import { ZodValidationPipe } from '../common/pipes/zod.pipe';
 import {
   LoginDto,
@@ -18,14 +17,11 @@ import {
 } from './auth.schema';
 import { AuthGuard } from './guards/auth.guard';
 import { CurrentUser } from '../common/decorators/CurrentUser';
-import JwtPayload from '../common/interfaces/JwtPayload';
+import { User } from '../api/users/user.entity';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   async register(
@@ -42,7 +38,8 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(AuthGuard)
-  getProfile(@CurrentUser() user: JwtPayload) {
-    return this.usersService.findById(user.id);
+  getProfile(@CurrentUser() user: User) {
+    const { password: _password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 }
