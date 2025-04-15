@@ -41,8 +41,7 @@ export class AuthController {
   @Get('me')
   @UseGuards(AuthGuard)
   getProfile(@CurrentUser() user: User) {
-    const { password: _password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return user;
   }
 
   @Get('logout')

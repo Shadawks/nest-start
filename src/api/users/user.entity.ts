@@ -1,4 +1,4 @@
-import { Entity, PrimaryKey, Property} from '@mikro-orm/core';
+import { Entity, PrimaryKey, Property, Index, Unique } from '@mikro-orm/core';
 import { v4 } from 'uuid';
 
 @Entity()
@@ -6,13 +6,15 @@ export class User {
   @PrimaryKey()
   id: string = v4();
 
+  @Unique()
   @Property()
   username!: string;
 
+  @Unique()
   @Property()
   email!: string;
 
-  @Property()
+  @Property({ hidden: true })
   password!: string;
 
   @Property()
@@ -21,12 +23,21 @@ export class User {
   @Property()
   theme!: string;
 
+  @Index()
   @Property({ default: false })
-  isVerified: boolean = false;
+  isVerified?: boolean = false;
+    
+  @Index()
+  @Property({ default: false })
+  isAdmin?: boolean = false;
+    
+  @Index()
+  @Property({ default: false })
+  isBlocked?: boolean = false;
 
-  @Property({ default: false })
-  isAdmin: boolean = false;
+  @Property({ nullable: true, defaultRaw: 'CURRENT_TIMESTAMP' })
+  createdAt?: Date = new Date();
 
-  @Property({ default: false })
-  isBlocked: boolean = false;
+  @Property({ nullable: true, onUpdate: () => new Date(), defaultRaw: 'CURRENT_TIMESTAMP' })
+  updatedAt?: Date = new Date();
 }

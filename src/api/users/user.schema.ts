@@ -5,10 +5,6 @@ export const CreateUserSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
 
-  isAdmin: z.boolean().optional().default(false),
-  isVerified: z.boolean().optional().default(false),
-  isBlocked: z.boolean().optional().default(false),
-
   theme: z.string().optional().default('light'),
   language: z.string().optional().default('en'),
 });

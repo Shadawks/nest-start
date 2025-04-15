@@ -37,9 +37,6 @@ export class AuthService {
     const user = await this.usersService.create({
       ...userData,
       password: hashedPassword,
-      isAdmin: false,
-      isBlocked: false,
-      isVerified: false,
     });
 
     return this.generateAuthResponse(user);
@@ -87,8 +84,6 @@ export class AuthService {
   }
 
   private async generateAuthResponse(user: User): Promise<AuthResponse> {
-    const { password: _hashed, ...userWithoutPassword } = user;
-    
     const token = await this.jwtService.signAsync({
       sub: user.id
     });
@@ -98,7 +93,7 @@ export class AuthService {
     return {
       token,
       refreshToken: refreshTokenEntity.token,
-      user: userWithoutPassword,
+      user,
     };
   }
 

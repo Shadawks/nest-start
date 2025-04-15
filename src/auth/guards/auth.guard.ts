@@ -46,9 +46,9 @@ export class AuthGuard implements CanActivate {
         throw new UnauthorizedException('User is blocked');
       }
 
-      if (!user.isVerified) {
-        throw new UnauthorizedException('User is not verified');
-      }
+      // if (!user.isVerified) {
+      //   throw new UnauthorizedException('User is not verified');
+      // }
 
       request.user = user;
     } catch (error) {

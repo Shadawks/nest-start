@@ -17,7 +17,6 @@ export class RefreshToken {
   @Property()
   createdAt: Date = new Date();
 
-  @Index()
   @ManyToOne(() => User)
   user!: User;
 
