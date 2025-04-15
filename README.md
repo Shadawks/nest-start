@@ -4,7 +4,7 @@ A boilerplate for building secure and scalable applications with NestJS.
 
 ## 🚀 Features
 
-- **Authentication**: JWT-based authentication.
+- **Authentication**: JWT-based authentication with refresh tokens.
 - **Validation**: Schema validation with Zod.
 - **ORM**: MikroORM with SQLite.
 
@@ -41,6 +41,8 @@ npm run start:dev
 | POST   | /auth/register | Register a new user                | ❌             |
 | POST   | /auth/login    | Login, returns a JWT               | ❌             |
 | GET    | /auth/me       | Profile of the connected user      | ✅ AuthGuard   |
+| POST   | /auth/refresh  | Refresh JWT token                  | ✅ AuthGuard   |
+| POST   | /auth/logout   | Logout, invalidates the refresh token | ✅ AuthGuard   |
 
 ### 👤 Users
 
