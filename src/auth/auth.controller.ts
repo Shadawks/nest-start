@@ -21,7 +21,9 @@ import { User } from '../api/users/user.entity';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService
+  ) {}
 
   @Post('register')
   async register(
@@ -41,5 +43,19 @@ export class AuthController {
   getProfile(@CurrentUser() user: User) {
     const { password: _password, ...userWithoutPassword } = user;
     return userWithoutPassword;
+  }
+
+  @Get('logout')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async logout(@CurrentUser() user: User) {
+    await this.authService.logout(user.id);
+    return { message: 'Logged out successfully' };
+  }
+
+  @Get('refresh')
+  @UseGuards(AuthGuard)
+  async refreshTokens(@CurrentUser() user: User) {
+    return await this.authService.refreshToken(user.id);
   }
 }

@@ -91,7 +91,7 @@ export class AuthService {
     
     const token = await this.jwtService.signAsync({
       sub: user.id
-    }, { expiresIn: '1h' });
+    });
     
     const refreshTokenEntity = await this.refreshTokenService.createRefreshToken(user);
     

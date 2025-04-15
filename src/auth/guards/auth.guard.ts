@@ -37,10 +37,6 @@ export class AuthGuard implements CanActivate {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
 
-      if (payload.exp && Date.now() >= payload.exp * 1000) {
-        throw new UnauthorizedException('Token expired');
-      }
-
       const user = await this.usersService.findById(payload.sub);
       if (!user) {
         throw new UnauthorizedException('User not found');
@@ -56,11 +52,9 @@ export class AuthGuard implements CanActivate {
 
       request.user = user;
     } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        throw error;
+      if (error instanceof Error) {
+        throw new UnauthorizedException(error.message);
       }
-
-      throw new UnauthorizedException('Invalid token');
     }
 
     return true;
