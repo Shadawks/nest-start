@@ -12,21 +12,30 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserSchema, CreateUserDto } from './user.schema';
-import { ZodValidationPipe } from '../../common/pipes/zod.pipe';
-import { AuthGuard } from '../../auth/guards/auth.guard';
-import { AdminGuard } from '../../auth/guards/admin.guard';
+import { ZodValidationPipe } from '../../common/pipes/zod.pipe'
+
+import { AuthGuard } from '../../rbac/guards/auth.guard';
+import { RoleGuard } from '../../rbac/guards/role.guard';
+import { PermissionGuard } from '../../rbac/guards/permission.guard';
+import { RequireRoles } from '../../rbac/decorators/require-roles.decorator';
+import { RequirePermissions } from '../../rbac/decorators/require-permissions.decorator';
+
 
 @Controller('users')
-@UseGuards(AuthGuard, AdminGuard)
+@UseGuards(AuthGuard, RoleGuard, PermissionGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @RequireRoles('admin')
+  @RequirePermissions('create:user')
   create(@Body(new ZodValidationPipe(CreateUserSchema)) dto: CreateUserDto) {
     return this.usersService.create(dto);
   }
 
   @Get()
+  @RequireRoles('admin')
+  @RequirePermissions('list:users')
   findAll(
     @Query('page', new ParseIntPipe({ optional: true })) page?: number,
     @Query('pageSize', new ParseIntPipe({ optional: true })) pageSize?: number,
@@ -35,21 +44,29 @@ export class UsersController {
   }
 
   @Get('username/:username')
+  @RequireRoles('admin')
+  @RequirePermissions('view:user')
   findByUsername(@Param('username') username: string) {
     return this.usersService.findByUsername(username);
   }
 
   @Get('email/:email')
+  @RequireRoles('admin')
+  @RequirePermissions('view:user')
   findByEmail(@Param('email') email: string) {
     return this.usersService.findByEmail(email);
   }
 
   @Get(':id')
+  @RequireRoles('admin')
+  @RequirePermissions('view:user')
   findById(@Param('id') id: string) {
     return this.usersService.findById(id);
   }
 
   @Put(':id')
+  @RequireRoles('admin')
+  @RequirePermissions('update:user')
   update(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(CreateUserSchema.partial()))
@@ -59,6 +76,8 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @RequireRoles('admin')
+  @RequirePermissions('delete:user')
   delete(@Param('id') id: string) {
     return this.usersService.delete(id);
   }

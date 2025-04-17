@@ -15,7 +15,7 @@ import {
   RegisterDto,
   RegisterSchema,
 } from './auth.schema';
-import { AuthGuard } from './guards/auth.guard';
+import { AuthGuard } from '../rbac/guards/auth.guard';
 import { CurrentUser } from '../common/decorators/CurrentUser';
 import { User } from '../api/users/user.entity';
 

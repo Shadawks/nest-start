@@ -16,7 +16,7 @@ export class UsersService {
   }
 
   async findById(id: string): Promise<User> {
-    const user = await this.em.findOne(User, { id });
+    const user = await this.em.findOne(User, { id }, { populate: ['roles'] });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
@@ -25,13 +25,13 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const user = await this.em.findOne(User, { email });
+    const user = await this.em.findOne(User, { email }, { populate: ['roles'] });
 
     return user;
   }
 
   async findByUsername(username: string): Promise<User | null> {
-    const user = await this.em.findOne(User, { username });
+    const user = await this.em.findOne(User, { username }, { populate: ['roles'] });
 
     return user;
   }
@@ -42,7 +42,7 @@ export class UsersService {
         { username: usernameOrEmail },
         { email: usernameOrEmail },
       ],
-    });
+    }, { populate: ['roles'] });
 
     return user;
   }
@@ -65,6 +65,7 @@ export class UsersService {
     const [data, total] = await this.em.findAndCount(User, {}, {
       limit: pageSize,
       offset: (page - 1) * pageSize,
+      populate: ['roles'],
     });
 
     return {
@@ -77,6 +78,6 @@ export class UsersService {
   }
 
   async findAllSimple(): Promise<User[]> {
-    return this.em.find(User, {});
+    return this.em.find(User, {}, { populate: ['roles'] });
   }
 }

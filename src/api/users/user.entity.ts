@@ -1,5 +1,6 @@
-import { Entity, PrimaryKey, Property, Index, Unique } from '@mikro-orm/core';
+import { Entity, PrimaryKey, Property, Index, Unique, ManyToMany, Collection } from '@mikro-orm/core';
 import { v4 } from 'uuid';
+import { Role } from '../roles/role.entity';
 
 @Entity()
 export class User {
@@ -26,11 +27,7 @@ export class User {
   @Index()
   @Property({ default: false })
   isVerified?: boolean = false;
-    
-  @Index()
-  @Property({ default: false })
-  isAdmin?: boolean = false;
-    
+
   @Index()
   @Property({ default: false })
   isBlocked?: boolean = false;
@@ -40,4 +37,7 @@ export class User {
 
   @Property({ nullable: true, onUpdate: () => new Date(), defaultRaw: 'CURRENT_TIMESTAMP' })
   updatedAt?: Date = new Date();
+
+  @ManyToMany(() => Role, role => role.users, { owner: true })
+  roles = new Collection<Role>(this);
 }

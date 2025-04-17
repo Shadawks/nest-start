@@ -1,17 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { EntityRepository, EntityManager } from '@mikro-orm/core';
-import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityManager } from '@mikro-orm/core';
 import { RefreshToken } from './refresh-token.entity';
 import { User } from '../api/users/user.entity';
 import * as crypto from 'crypto';
 
 @Injectable()
 export class RefreshTokenService {
-  constructor(
-    @InjectRepository(RefreshToken)
-    private refreshTokenRepository: EntityRepository<RefreshToken>,
-    private readonly em: EntityManager
-  ) {}
+  constructor(private readonly em: EntityManager) {}
 
   async createRefreshToken(user: User, expiresIn: number = 604800): Promise<RefreshToken> {
     const token = crypto.randomBytes(40).toString('hex');
@@ -20,7 +15,7 @@ export class RefreshTokenService {
 
     await this.revokeAllUserTokens(user.id);
 
-    const refreshToken = this.refreshTokenRepository.create({
+    const refreshToken = this.em.create(RefreshToken, {
       token,
       expiresAt,
       user,
@@ -33,14 +28,11 @@ export class RefreshTokenService {
   }
 
   async findByToken(token: string): Promise<RefreshToken | null> {
-    return this.refreshTokenRepository.findOne(
-      { token, isRevoked: false },
-      { populate: ['user'] }
-    );
+    return this.em.findOne(RefreshToken, { token, isRevoked: false }, { populate: ['user'] });
   }
 
   async revokeToken(id: string): Promise<void> {
-    const token = await this.refreshTokenRepository.findOne(id);
+    const token = await this.em.findOne(RefreshToken, id);
     if (token) {
       token.isRevoked = true;
       await this.em.flush();
@@ -48,10 +40,7 @@ export class RefreshTokenService {
   }
 
   async revokeAllUserTokens(userId: string): Promise<void> {
-    const tokens = await this.refreshTokenRepository.find({ 
-      user: { id: userId },
-      isRevoked: false 
-    });
+    const tokens = await this.em.find(RefreshToken, { user: userId, isRevoked: false });
     
     tokens.forEach(token => {
       token.isRevoked = true;

@@ -12,13 +12,16 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../api/users/user.entity';
 import AuthResponse from '../common/interfaces/AuthResponse';
 import { RefreshTokenService } from './refresh-token.service';
+import { RolesService } from '../api/roles/roles.service';
+
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private refreshTokenService: RefreshTokenService
+    private refreshTokenService: RefreshTokenService,
+    private rolesService: RolesService,
   ) {}
 
   async register(createUserDto: CreateUserDto): Promise<AuthResponse> {
@@ -38,6 +41,11 @@ export class AuthService {
       ...userData,
       password: hashedPassword,
     });
+
+    const defaultRole = await this.rolesService.findDefaultRole();
+    if (defaultRole) {
+      await this.rolesService.assignRoleToUser(user.id, defaultRole.id);
+    }
 
     return this.generateAuthResponse(user);
   }
