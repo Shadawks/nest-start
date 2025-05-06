@@ -33,6 +33,12 @@ npm install
 ## 🏃‍♂️ Running the Application
 
 ```bash
+# Run migrations
+npx mikro-orm migration:create
+
+# Update the database
+npx mikro-orm migration:up
+
 # Start the application
 npm run start:dev
 ```
