@@ -11,6 +11,7 @@ A boilerplate for building secure and scalable applications with NestJS.
 - **Permission Management**: Create, update, delete permissions and assign them to roles.
 - **Validation**: Schema validation with Zod.
 - **ORM**: MikroORM with SQLite.
+- **Mailer**: Send emails with Nodemailer.
 
 ## ⚙️ Configuration
 
