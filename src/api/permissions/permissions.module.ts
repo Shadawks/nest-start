@@ -3,7 +3,6 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Permission } from './permission.entity';
 import { PermissionsService } from './permissions.service';
 import { PermissionsController } from './permissions.controller';
-import { PermissionsInitService } from './permissions-init.service';
 import { UsersModule } from '../users/users.module';
 import { RolesModule } from '../roles/roles.module';
 import { RbacModule } from '../../rbac/rbac.module';
@@ -16,7 +15,7 @@ import { RbacModule } from '../../rbac/rbac.module';
     RbacModule
   ],
   controllers: [PermissionsController],
-  providers: [PermissionsService, PermissionsInitService],
+  providers: [PermissionsService],
   exports: [PermissionsService],
 })
 export class PermissionsModule {}

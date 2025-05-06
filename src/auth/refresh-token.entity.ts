@@ -17,7 +17,7 @@ export class RefreshToken {
   @Property()
   createdAt: Date = new Date();
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { deleteRule: 'CASCADE' })
   user!: User;
 
   @Index()

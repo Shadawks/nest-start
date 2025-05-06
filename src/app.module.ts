@@ -6,6 +6,8 @@ import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './api/roles/roles.module';
 import { PermissionsModule } from './api/permissions/permissions.module';
 import { RbacModule } from './rbac/rbac.module';
+import { MailerModule } from './mailer/mailer.module';
+import { DatabaseModule } from './database/database.module';
 import config from '../mikro-orm.config';
 
 @Module({
@@ -19,6 +21,8 @@ import config from '../mikro-orm.config';
     RolesModule,
     PermissionsModule,
     RbacModule,
+    MailerModule,
+    DatabaseModule
   ],
   controllers: [],
   providers: [],

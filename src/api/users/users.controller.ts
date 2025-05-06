@@ -28,14 +28,14 @@ export class UsersController {
 
   @Post()
   @RequireRoles('admin')
-  @RequirePermissions('create:user')
+  @RequirePermissions('users:create')
   create(@Body(new ZodValidationPipe(CreateUserSchema)) dto: CreateUserDto) {
     return this.usersService.create(dto);
   }
 
   @Get()
   @RequireRoles('admin')
-  @RequirePermissions('list:users')
+  @RequirePermissions('users:list')
   findAll(
     @Query('page', new ParseIntPipe({ optional: true })) page?: number,
     @Query('pageSize', new ParseIntPipe({ optional: true })) pageSize?: number,
@@ -45,28 +45,28 @@ export class UsersController {
 
   @Get('username/:username')
   @RequireRoles('admin')
-  @RequirePermissions('view:user')
+  @RequirePermissions('users:view')
   findByUsername(@Param('username') username: string) {
     return this.usersService.findByUsername(username);
   }
 
   @Get('email/:email')
   @RequireRoles('admin')
-  @RequirePermissions('view:user')
+  @RequirePermissions('users:view')
   findByEmail(@Param('email') email: string) {
     return this.usersService.findByEmail(email);
   }
 
   @Get(':id')
   @RequireRoles('admin')
-  @RequirePermissions('view:user')
+  @RequirePermissions('users:view')
   findById(@Param('id') id: string) {
     return this.usersService.findById(id);
   }
 
   @Put(':id')
   @RequireRoles('admin')
-  @RequirePermissions('update:user')
+  @RequirePermissions('users:update')
   update(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(CreateUserSchema.partial()))

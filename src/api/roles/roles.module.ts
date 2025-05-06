@@ -3,7 +3,6 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Role } from './role.entity';
 import { RolesController } from './roles.controller';
 import { RolesService } from './roles.service';
-import { RolesInitService } from './roles-init.service';
 import { UsersModule } from '../users/users.module';
 import { RbacModule } from '../../rbac/rbac.module';
 
@@ -14,7 +13,7 @@ import { RbacModule } from '../../rbac/rbac.module';
     RbacModule
   ],
   controllers: [RolesController],
-  providers: [RolesService, RolesInitService],
+  providers: [RolesService],
   exports: [RolesService],
 })
 
